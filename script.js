@@ -18,6 +18,9 @@ let recipes = {
 async function getData() {
   try {
     recipeWrapper.innerHTML = "";
+    recipes.img = [];
+    recipes.name = [];
+    recipes.link = [];
     let response = await fetch(accessPoint + "&q=" + input.value);
     let data = await response.json();
     console.log(data);
