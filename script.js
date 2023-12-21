@@ -1,17 +1,21 @@
 const input = document.getElementsByClassName("search-input")[0];
 const submitBtn = document.getElementsByClassName("search-btn")[0];
 const recipeWrapper = document.getElementsByClassName("recipe-wrapper")[0];
-
 const ring = Array.from(document.getElementsByClassName("lds-ring-div"));
-console.log(submitBtn);
+const loadMore = document.getElementsByClassName("load-more")[0];
 
 submitBtn.addEventListener("click", getData);
 
 let accessPoint =
   "https://api.edamam.com/api/recipes/v2?type=public&app_id=fc51bed8&app_key=824f531904f7233c3adfdd524a1bc774";
 
-let max = 0;
+let max = 6;
 let recipes = [];
+
+loadMore.addEventListener("click", (e) => {
+  max += max;
+  getData();
+});
 
 async function getData() {
   try {
@@ -21,7 +25,7 @@ async function getData() {
     let response = await fetch(accessPoint + "&q=" + input.value);
     let data = await response.json();
     let recipeArray = data["hits"];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < max; i++) {
       let object = {};
       object.name = recipeArray[i]["recipe"].label;
       object.link = recipeArray[i]["recipe"].url;
@@ -37,7 +41,7 @@ async function getData() {
 
 function createRecipe() {
   animate();
-  for (var i = 0; i < 6; i++) {
+  for (var i = 0; i < max; i++) {
     const recipeContainer = document.createElement("div");
     const recipeImg = document.createElement("img");
     const recipeTitle = document.createElement("h6");
@@ -64,6 +68,9 @@ function animate() {
     ring.classList.toggle("is-active");
   });
 }
+function loadToggle() {
+  loadMore.classList.add("is-active");
+}
 function enterData() {
   const recipeImg = Array.from(document.getElementsByClassName("recipe-img"));
   const recipeTitle = Array.from(
@@ -80,4 +87,5 @@ function enterData() {
     recipeLink[i].innerHTML = "See the recipe ";
     recipeLink[i].href = recipes[i].link;
   }
+  loadToggle();
 }

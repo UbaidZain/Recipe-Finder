@@ -183,3 +183,22 @@ h6,
     background-color: #dadcda;
   }
 }
+
+.load-more {
+  background-color: var(--primary);
+  padding: 24px 48px;
+  border-radius: 8px;
+  display: none;
+  margin-top: 4rem;
+}
+.load-more.is-active {
+  display: block;
+}
+.load-more:hover,
+.load-more:focus {
+  background-color: #28fb03;
+  cursor: pointer;
+}
+.load-more h6 {
+  color: white;
+}
