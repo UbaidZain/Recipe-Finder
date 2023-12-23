@@ -3,34 +3,33 @@ const submitBtn = document.getElementsByClassName("search-btn")[0];
 const recipeWrapper = document.getElementsByClassName("recipe-wrapper")[0];
 const ring = Array.from(document.getElementsByClassName("lds-ring-div"));
 const loadMore = document.getElementsByClassName("load-more")[0];
-
-submitBtn.addEventListener("click", getData);
-
-let accessPoint =
-  "https://api.edamam.com/api/recipes/v2?type=public&app_id=fc51bed8&app_key=824f531904f7233c3adfdd524a1bc774";
-
+submitBtn.addEventListener("click", loadData);
 let max = 6;
 let recipes = [];
 
-loadMore.addEventListener("click", (e) => {
-  max += max;
-  getData();
-});
+loadMore.addEventListener("click", loadMoreToggle);
 
-async function getData() {
+async function loadData() {
+  recipes = [];
+  recipeWrapper.innerHTML = "";
+  max = 6;
   try {
     animate();
-    recipeWrapper.innerHTML = "";
-    recipes = [];
-    let response = await fetch(accessPoint + "&q=" + input.value);
+    let response = await fetch(
+      `https://api.edamam.com/api/recipes/v2?type=public&app_id=fc51bed8&app_key=824f531904f7233c3adfdd524a1bc774&q=${input.value}`
+    );
+
     let data = await response.json();
     let recipeArray = data["hits"];
     for (let i = 0; i < max; i++) {
-      let object = {};
-      object.name = recipeArray[i]["recipe"].label;
-      object.link = recipeArray[i]["recipe"].url;
-      object.img = recipeArray[i]["recipe"].image;
-      recipes.push(object);
+      if (recipeArray[i] !== undefined) {
+        let object = {};
+        object.name = recipeArray[i]["recipe"].label;
+        object.link = recipeArray[i]["recipe"].url;
+        object.img = recipeArray[i]["recipe"].image;
+
+        recipes.push(object);
+      }
     }
   } catch (e) {
     console.log(e);
@@ -69,7 +68,7 @@ function animate() {
   });
 }
 function loadToggle() {
-  loadMore.classList.add("is-active");
+  loadMore.classList.toggle("is-active");
 }
 function enterData() {
   const recipeImg = Array.from(document.getElementsByClassName("recipe-img"));
@@ -88,4 +87,51 @@ function enterData() {
     recipeLink[i].href = recipes[i].link;
   }
   loadToggle();
+}
+
+async function loadMoreToggle() {
+  max += 4;
+  if (recipes.length < 20) {
+    try {
+      animate();
+      let response = await fetch(
+        `https://api.edamam.com/api/recipes/v2?type=public&app_id=fc51bed8&app_key=824f531904f7233c3adfdd524a1bc774&q=${input.value}`
+      );
+
+      let data = await response.json();
+      let recipeArray = data["hits"];
+      if (recipes.length < 20) {
+        if (max > 6) {
+          let x = max / 2;
+          recipeArray.splice(0, x);
+          for (let i = 0; i < max; i++) {
+            if (recipeArray[i] !== undefined) {
+              let object = {};
+              object.name = recipeArray[i]["recipe"].label;
+              object.link = recipeArray[i]["recipe"].url;
+              object.img = recipeArray[i]["recipe"].image;
+              recipes.push(object);
+            }
+          }
+        } else {
+          for (let i = 0; i < max; i++) {
+            if (recipeArray[i] !== undefined) {
+              let object = {};
+              object.name = recipeArray[i]["recipe"].label;
+              object.link = recipeArray[i]["recipe"].url;
+              object.img = recipeArray[i]["recipe"].image;
+
+              recipes.push(object);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    createRecipe();
+    enterData();
+  } else {
+    loadToggle();
+  }
 }
